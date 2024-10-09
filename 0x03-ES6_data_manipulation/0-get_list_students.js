@@ -1,27 +1,13 @@
 /**
- * A weak map of endpoints and the number of calls made.
- */
-export const weakMap = new WeakMap();
-
-/**
- * The maximum number of calls for an endpoint.
- */
-const MAX_ENDPOINT_CALLS = 5;
-
-/**
- * Tracks the number of calls made to an API's endpoint.
- * @param {{
- *   protocol: String,
- *   name: String,
- * }} endpoint - The endpoint to make a request to.
+ * Retrieves a list of students.
  * @author Bezaleel Olakunori <https://github.com/B3zaleel>
+ * @returns {{id: Number, firstName: String, location: String}[]}
  */
-export function queryAPI(endpoint) {
-  if (!weakMap.has(endpoint)) {
-    weakMap.set(endpoint, 0);
+export default function getListStudents() {
+    return [
+      { id: 1, firstName: 'Guillaume', location: 'San Francisco' },
+      { id: 2, firstName: 'James', location: 'Columbia' },
+      { id: 5, firstName: 'Serena', location: 'San Francisco' },
+    ];
   }
-  weakMap.set(endpoint, weakMap.get(endpoint) + 1);
-  if (weakMap.get(endpoint) >= MAX_ENDPOINT_CALLS) {
-    throw new Error('Endpoint load is high');
-  }
-}
+  
