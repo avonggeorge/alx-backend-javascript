@@ -1,0 +1,810 @@
+TypeScript is closely related to JavaScript, enhancing it with a type system. While JavaScript allows the use of basic data types like strings and numbers without checking how they are used, TypeScript enforces consistent use of these types. This means that any valid JavaScript code is also valid TypeScript code. The key advantage of TypeScript is its ability to identify potential errors in your code, helping to reduce bugs.
+
+
+
+
+// There are two main tools to declare the shape of an
+// object: interfaces and type aliases.
+//
+// They are very similar, and for the most common cases
+// act the same.
+
+type BirdType = {
+  wings: 2;
+};
+
+interface BirdInterface {
+  wings: 2;
+}
+
+const bird1: BirdType = { wings: 2 };
+const bird2: BirdInterface = { wings: 2 };
+
+// Because TypeScript is a structural type system,
+// it's possible to intermix their use too.
+
+const bird3: BirdInterface = bird1;
+
+// They both support extending other interfaces and types.
+// Type aliases do this via intersection types, while
+// interfaces have a keyword.
+
+type Owl = { nocturnal: true } & BirdType;
+type Robin = { nocturnal: false } & BirdInterface;
+
+interface Peacock extends BirdType {
+  colourful: true;
+  flies: false;
+}
+interface Chicken extends BirdInterface {
+  colourful: false;
+  flies: false;
+}
+
+let owl: Owl = { wings: 2, nocturnal: true };
+let chicken: Chicken = { wings: 2, colourful: false, flies: false };
+
+// That said, we recommend you use interfaces over type
+// aliases. Specifically, because you will get better error
+// messages. If you hover over the following errors, you can
+// see how TypeScript can provide terser and more focused
+// messages when working with interfaces like Chicken.
+
+owl = chicken;
+chicken = owl;
+
+// One major difference between type aliases vs interfaces
+// are that interfaces are open and type aliases are closed.
+// This means you can extend an interface by declaring it
+// a second time.
+
+interface Kitten {
+  purrs: boolean;
+}
+
+interface Kitten {
+  colour: string;
+}
+
+// In the other case a type cannot be changed outside of
+// its declaration.
+
+type Puppy = {
+  color: string;
+};
+
+type Puppy = {
+  toys: number;
+};
+
+// Depending on your goals, this difference could be a
+// positive or a negative. However for publicly exposed
+// types, it's a better call to make them an interface.
+
+// One of the best resources for seeing all of the edge
+// cases around types vs interfaces, this stack overflow
+// thread is a good place to start:
+
+// https://stackoverflow.com/questions/37233735/typescript-interfaces-vs-types/52682220#52682220
+
+
+
+
+
+
+any
+TypeScript also has a special type, any, that you can use whenever you don’t want a particular value to cause typechecking errors.
+
+When a value is of type any, you can access any properties of it (which will in turn be of type any), call it like a function, assign it to (or from) a value of any type, or pretty much anything else that’s syntactically legal:
+
+let obj: any = { x: 0 };
+// None of the following lines of code will throw compiler errors.
+// Using `any` disables all further type checking, and it is assumed
+// you know the environment better than TypeScript.
+obj.foo();
+obj();
+obj.bar = 100;
+obj = "hello";
+const n: number = obj;
+
+
+Basic types in Typescript
+Sider Fusion
+In TypeScript, there are several basic types that you can use to define the shape and structure of your data. Here are the most common basic types:
+
+Number: Represents both integer and floating-point numbers.
+
+typescript
+let age: number = 30;  
+let temperature: number = 36.6;  
+String: Represents text data. Strings can be enclosed in single quotes, double quotes, or backticks (for template literals).
+
+typescript
+let name: string = "Alice";  
+let greeting: string = `Hello, ${name}!`;  
+Boolean: Represents a true/false value.
+
+typescript
+let isActive: boolean = true;  
+let hasAccess: boolean = false;  
+Array: A collection of items of the same type. You can define arrays using a type followed by [] or using the Array<type> syntax.
+
+typescript
+let numbers: number[] = [1, 2, 3, 4];  
+let names: Array<string> = ["Alice", "Bob", "Charlie"];  
+Tuple: An array with a fixed number of elements where each element can have a different type.
+
+typescript
+let person: [string, number] = ["Alice", 30];  
+Enum: A way to define a set of named constants.
+
+typescript
+enum Color {  
+  Red,  
+  Green,  
+  Blue,  
+}  
+let favoriteColor: Color = Color.Green;  
+Any: A type that can represent any value. It can be useful when you don't know the type in advance, but it should be used sparingly to maintain type safety.
+
+typescript
+let randomValue: any = 42;  
+randomValue = "Now I'm a string";  
+Void: Represents the absence of a value. It's commonly used as the return type for functions that do not return a value.
+
+typescript
+function logMessage(message: string): void {  
+  console.log(message);  
+}  
+Null and Undefined: Represent the absence of value (null) and an uninitialized value (undefined). TypeScript allows you to specify if a variable can be null or undefined.
+
+typescript
+let nullable: string | null = null;  
+let undefinedVal: number | undefined = undefined;  
+Never: Represents a value that never occurs, typically used for functions that throw exceptions or have infinite loops.
+
+typescript
+function throwError(message: string): never {  
+  throw new Error(message);  
+}  
+These basic types enable you to define and manage the various kinds of data effectively in TypeScript, enhancing code clarity and type safety.
+
+
+
+
+Interfaces, Classes, and functions
+
+In TypeScript, interfaces, classes, and functions are fundamental constructs that help you define the structure and behavior of your code. Here's an overview of each:
+
+Interfaces
+Interfaces define the shape and structure of objects. They allow you to specify what properties and methods an object should have, promoting type safety and ensuring that objects conform to certain structures.
+
+Defining an Interface:
+
+typescript
+interface User {  
+  name: string;  
+  age: number;  
+  getDetails(): string; // Method signature  
+}  
+Implementing an Interface:
+To implement an interface, a class must provide the specified properties and methods.
+
+typescript
+class Person implements User {  
+  name: string;  
+  age: number;  
+
+  constructor(name: string, age: number) {  
+    this.name = name;  
+    this.age = age;  
+  }  
+
+  getDetails(): string {  
+    return `${this.name} is ${this.age} years old.`;  
+  }  
+}  
+
+const user: User = new Person("Alice", 30);  
+console.log(user.getDetails()); // Alice is 30 years old.  
+Classes
+Classes are blueprints for creating objects. They encapsulate data and behavior, allowing you to create instances (objects) that share the same structure and methods.
+
+Defining a Class:
+You can define a class using the class keyword.
+
+typescript
+class Animal {  
+  name: string;  
+
+  constructor(name: string) {  
+    this.name = name;  
+  }  
+
+  speak(): void {  
+    console.log(`${this.name} makes a noise.`);  
+  }  
+}  
+Creating an Instance of a Class:
+You can create instances of a class using the new keyword.
+
+typescript
+const dog = new Animal("Dog");  
+dog.speak(); // Dog makes a noise.  
+Functions
+Functions are reusable blocks of code that perform specific tasks. In TypeScript, you can define functions with specified parameter and return types, enhancing type safety.
+
+Function Definition:
+
+typescript
+function add(a: number, b: number): number {  
+  return a + b;  
+}  
+Calling a Function:
+You can call the function and get the result.
+
+typescript
+const sum = add(5, 10); // sum will be 15  
+console.log(sum);  
+Optional and Default Parameters:
+You can define optional parameters using ?, and default parameters by assigning a default value.
+
+typescript
+function greet(name: string, greeting: string = "Hello"): string {  
+  return `${greeting}, ${name}!`;  
+}  
+
+console.log(greet("Alice")); // Hello, Alice!  
+console.log(greet("Bob", "Hi")); // Hi, Bob!  
+Combining Interfaces, Classes, and Functions
+You can combine these constructs for more complex types. For example, a function can return an object defined by an interface:
+
+typescript
+interface Result {  
+  success: boolean;  
+  message: string;  
+}  
+
+function performTask(task: string): Result {  
+  // Simulate task success  
+  return {  
+    success: true,  
+    message: `Task ${task} completed successfully.`,  
+  };  
+}  
+
+const result = performTask("example task");  
+console.log(result.message); // Task example task completed successfully.  
+Conclusion
+Interfaces, classes, and functions in TypeScript provide a powerful way to structure your code with clear types and behaviors, improving code readability and maintainability while leveraging TypeScript’s static typing capabilities.
+
+
+
+
+
+
+How to work with the DOM and Typescript
+Sider Fusion
+Working with the Document Object Model (DOM) in TypeScript is similar to working with it in JavaScript, but TypeScript provides type safety, which helps catch errors at compile time. Here's a guide on how to work with the DOM in TypeScript:
+
+1. Setting Up a TypeScript Environment
+To work with TypeScript and the DOM, ensure you have a TypeScript environment set up. You can create an HTML file and link your TypeScript file compiled to JavaScript.
+
+Example Setup:
+
+Create an index.html file:
+
+html
+<!DOCTYPE html>  
+<html lang="en">  
+<head>  
+    <meta charset="UTF-8">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <title>TypeScript DOM Example</title>  
+</head>  
+<body>  
+    <h1 id="header">Hello, TypeScript!</h1>  
+    <button id="changeTextButton">Change Text</button>  
+    <script src="dist/app.js"></script> <!-- Link to the compiled JS -->  
+</body>  
+</html>  
+Create a tsconfig.json file for your TypeScript configuration:
+
+json
+{  
+  "compilerOptions": {  
+    "target": "es6",  
+    "module": "commonjs",  
+    "outDir": "./dist",  
+    "strict": true,  
+    "esModuleInterop": true  
+  },  
+  "include": ["src/**/*"]  
+}  
+Create a src folder and add a app.ts file:
+
+2. Accessing and Modifying the DOM
+You can use TypeScript to manipulate the DOM in a type-safe way. Here are some common operations:
+
+Example of Accessing and Modifying the DOM:
+
+typescript
+// src/app.ts  
+
+// Accessing an element by its ID  
+const header = document.getElementById("header") as HTMLElement;  
+
+// Modifying the content of the header  
+if (header) {  
+    header.innerText = "Hello, DOM with TypeScript!";  
+}  
+
+// Adding a click event to a button  
+const button = document.getElementById("changeTextButton") as HTMLButtonElement;  
+
+if (button) {  
+    button.addEventListener("click", () => {  
+        if (header) {  
+            header.innerText = "Text Changed!";  
+        }  
+    });  
+}  
+3. Type Assertions
+In the example above, we used type assertions (e.g., as HTMLElement) to tell TypeScript the specific type of the element we are working with. This is useful because getElementById returns HTMLElement | null, and we want to ensure we have the right type before calling methods on it.
+
+4. Event Handling
+TypeScript allows you to define event handlers with specific types for the event object, providing better type checks.
+
+Example:
+
+typescript
+button.addEventListener("click", (event: MouseEvent) => {  
+    console.log(`Button clicked!`, event);  
+});  
+5. Working with Forms
+You can also work with forms and their elements in a type-safe way.
+
+Example of Handling Form Submission:
+
+typescript
+const form = document.getElementById("myForm") as HTMLFormElement;  
+
+if (form) {  
+    form.addEventListener("submit", (event: Event) => {  
+        event.preventDefault(); // Prevent the form from submitting normally  
+        const formData = new FormData(form);  
+        const name = formData.get("name") as string; // Assume there's an input with name="name"  
+        console.log(`Name: ${name}`);  
+    });  
+}  
+6. Styling Elements
+You can use TypeScript to change the styles of DOM elements dynamically.
+
+Example:
+
+typescript
+header.style.color = "blue";  
+header.style.fontSize = "2em";  
+7. Compiling TypeScript
+Make sure you have TypeScript installed globally or in your project:
+
+bash
+npm install -g typescript  
+Compile your TypeScript code to JavaScript:
+
+bash
+tsc  
+This will compile your .ts files in the src folder into the dist folder as .js files.
+
+8. Conclusion
+Working with the DOM in TypeScript allows you to leverage the type system for better tooling and fewer runtime errors. By accessing elements, modifying them, handling events, and more, you can build dynamic web applications with TypeScript's type safety. Remember to compile your TypeScript code to ensure it runs in the browser.
+
+
+
+
+
+Generic types
+Sider Fusion
+Generic types in TypeScript are a powerful feature that allows you to create reusable components and functions that can work with a variety of types while maintaining type safety. This enables you to avoid code duplication and creates flexibility in your code.
+
+1. Understanding Generics
+Generics allow you to define a type that can accept various data types as a parameter. You can think of generics as placeholders for types that will be specified when you use them.
+
+2. Defining Generic Functions
+You can define a generic function using angle brackets (<T>) to specify a type variable.
+
+Example of a Generic Function:
+
+typescript
+function identity<T>(arg: T): T {  
+    return arg;  
+}  
+
+const num = identity<number>(5); // num is of type number  
+const str = identity<string>("Hello"); // str is of type string  
+const bool = identity<boolean>(true); // bool is of type boolean  
+3. Generic Interfaces
+You can also define interfaces with generic types. This is useful for creating structures that can hold data of various types.
+
+Example of a Generic Interface:
+
+typescript
+interface GenericBox<T> {  
+    contents: T;  
+}  
+
+const numberBox: GenericBox<number> = { contents: 123 };  
+const stringBox: GenericBox<string> = { contents: "A string" };  
+4. Generic Classes
+Classes can also be generic, allowing you to create types that can operate with different types.
+
+Example of a Generic Class:
+
+typescript
+class Pair<K, V> {  
+    constructor(public key: K, public value: V) {}  
+}  
+
+const numberStringPair = new Pair<number, string>(1, "One");  
+const stringBooleanPair = new Pair<string, boolean>("IsAwesome", true);  
+5. Constraints on Generics
+You can restrict the types that can be used with generics by using constraints. This is done using the extends keyword.
+
+Example of Generic Constraints:
+
+typescript
+interface Lengthwise {  
+    length: number;  
+}  
+
+function logLength<T extends Lengthwise>(arg: T): void {  
+    console.log(arg.length);  
+}  
+
+logLength("Hello"); // Works since string has a length property  
+logLength([1, 2, 3]); // Works since array has a length property  
+// logLength(123); // Error: number doesn't have a length property  
+6. Using Multiple Generic Types
+You can define a function, interface, or class with multiple generic types.
+
+Example of Multiple Generic Types:
+
+typescript
+function combine<K, V>(key: K, value: V): [K, V] {  
+    return [key, value];  
+}  
+
+const combined = combine<string, number>("age", 25); // combined is of type [string, number]  
+7. Using Default Generics
+You can specify default types for your generics. This way, if the user does not provide a type argument, TypeScript will use the default type.
+
+Example of Default Generics:
+
+typescript
+function wrapInArray<T = string>(arg: T): T[] {  
+    return [arg];  
+}  
+
+const stringArray = wrapInArray("Hello"); // Type is string[]  
+const numberArray = wrapInArray<number>(42); // Type is number[]  
+8. Conclusion
+Generic types in TypeScript provide a way to create flexible and reusable code by allowing functions, classes, and interfaces to work with different types while keeping type safety in place. This feature reduces code duplication and enhances maintainability, making it easier to manage large codebases. Generics are particularly beneficial in libraries and frameworks, where functions and data structures need to handle a variety of data types dynamically.
+
+
+
+
+Namespaces in TypeScript provide a way to organize code into logical groups, allowing for better modularity and avoiding naming collisions. Here’s how to use them:
+
+1. Defining a Namespace
+You can define a namespace using the namespace keyword, followed by a name. Inside the namespace, you can declare variables, functions, interfaces, and classes.
+
+Example:
+
+typescript
+namespace MathUtils {  
+    export function add(x: number, y: number): number {  
+        return x + y;  
+    }  
+
+    export function subtract(x: number, y: number): number {  
+        return x - y;  
+    }  
+}  
+2. Using a Namespace
+To use the functions or other members defined in a namespace, you must refer to them using the namespace name followed by the member name.
+
+Example:
+
+typescript
+const sum = MathUtils.add(5, 10); // sum is 15  
+const difference = MathUtils.subtract(10, 5); // difference is 5  
+3. Nested Namespaces
+You can also nest namespaces inside other namespaces.
+
+Example:
+
+typescript
+namespace Shapes {  
+    export namespace Circle {  
+        export function area(radius: number): number {  
+            return Math.PI * radius * radius;  
+        }  
+    }  
+}  
+
+const circleArea = Shapes.Circle.area(5); // circleArea is 78.54...  
+4. Merging Namespaces
+In TypeScript, you can merge namespaces and interfaces to extend their functionality.
+
+Example:
+
+typescript
+namespace User {  
+    export interface Profile {  
+        name: string;  
+        age: number;  
+    }  
+}  
+
+namespace User {  
+    export function greet(profile: Profile): string {  
+        return `Hello, ${profile.name}`;  
+    }  
+}  
+
+const userProfile: User.Profile = { name: "Alice", age: 30 };  
+const greeting = User.greet(userProfile); // "Hello, Alice"  
+5. File Structure and Namespaces
+Namespaces can also help organize code across multiple files. To use namespaces effectively:
+
+Define the namespace in a separate file.
+Use the /// <reference path="..." /> directive at the top of a file to include other files, or configure your TypeScript compiler to compile multiple files together.
+Example:
+
+In mathUtils.ts:
+
+typescript
+namespace MathUtils {  
+    export function multiply(x: number, y: number): number {  
+        return x * y;  
+    }  
+}  
+In main.ts:
+
+typescript
+/// <reference path="mathUtils.ts" />  
+
+const product = MathUtils.multiply(5, 10); // product is 50  
+6. Conclusion
+Namespaces in TypeScript are a way to organize and encapsulate code, preventing naming conflicts and improving code structure. They can be used alone or combined with other features like modules for more sophisticated designs. However, with the introduction of ES6 modules, namespaces are less commonly used in favor of module-based organization, but they can still be useful in certain scenarios.
+
+
+
+
+
+In TypeScript, merging declarations allows you to combine multiple declarations of the same name into a single entity. This is useful for extending interfaces, classes, or namespaces without altering the original declaration. There are a few key areas where declaration merging occurs:
+
+1. Merging Interfaces
+You can define multiple interfaces with the same name, and TypeScript will merge their properties into a single interface.
+
+Example:
+
+typescript
+interface Person {  
+    name: string;  
+}  
+
+interface Person {  
+    age: number;  
+}  
+
+// Merged Result  
+const john: Person = {  
+    name: "John",  
+    age: 30  
+};  
+2. Merging Namespaces
+You can merge namespaces by declaring multiple namespaces with the same name. This is particularly useful for extending an existing namespace with additional functionality.
+
+Example:
+
+typescript
+namespace MathUtils {  
+    export function add(x: number, y: number): number {  
+        return x + y;  
+    }  
+}  
+
+namespace MathUtils {  
+    export function subtract(x: number, y: number): number {  
+        return x - y;  
+    }  
+}  
+
+// Both functions are available under MathUtils  
+const sum = MathUtils.add(5, 10); // sum is 15  
+const diff = MathUtils.subtract(10, 5); // diff is 5  
+3. Merging Classes
+You can also merge class declarations. This allows you to add more members to a class in separate declarations.
+
+Example:
+
+typescript
+class Animal {  
+    name: string;  
+
+    constructor(name: string) {  
+        this.name = name;  
+    }  
+}  
+
+class Animal {  
+    age: number;  
+
+    constructor(age: number) {  
+        this.age = age;  
+    }  
+}  
+
+// Merged Result  
+const dog = new Animal("Dog"); // Error: Constructor with multiple overloads not allowed  
+Note that merging on class constructors directly does not work as expected and is discouraged.
+
+4. Merging Enums
+When you declare multiple enums with the same name, TypeScript will not merge them. Instead, it will raise an error if they have conflicting values.
+
+5. Using Declaration Merging Effectively
+Extending Libraries: You can extend existing library types by merging interfaces. For example, if you want to add a new method to an existing interface from a library.
+Adding Types to Existing Structures: When working with modules, use declaration merging to extend types.
+Example: Extending a Library Interface
+
+typescript
+interface JQuery {  
+    fadeOut(duration: number): void; // Extending the JQuery interface  
+}  
+
+// Now you can use fadeOut in your code with jQuery objects  
+6. Conclusion
+Declaration merging in TypeScript allows flexibility and extensibility by enabling multiple declarations of the same name to be combined into one. This feature is particularly useful for extending interfaces and namespaces, enhancing code modularity while maintaining type safety. However, merging declarations for classes should be approached with care due to potential complications with constructors.
+
+
+
+
+
+In TypeScript, an ambient namespace can be used to define types for external libraries that do not have type definitions available. This allows you to work with these libraries in a type-safe manner. Here’s how you can use an ambient namespace to import and type an external library:
+
+1. Create a Declaration File
+To start, create a new TypeScript declaration file, typically with a .d.ts extension. This file will contain the ambient namespace definition for the external library.
+
+Example: Create a file named myLibrary.d.ts.
+
+typescript
+// myLibrary.d.ts  
+
+declare namespace MyLibrary {  
+    function greet(name: string): string;  
+    function add(x: number, y: number): number;  
+}  
+2. Use the Ambient Namespace
+Now, you can use the functions defined in the ambient namespace in your TypeScript files.
+
+Example: In your TypeScript file.
+
+typescript
+// main.ts  
+
+/// <reference path="myLibrary.d.ts" />  
+
+const greeting = MyLibrary.greet("Alice"); // "Hello, Alice"  
+const sum = MyLibrary.add(5, 10); // 15  
+
+console.log(greeting);  
+console.log(sum);  
+3. Compile with TypeScript
+Make sure to compile your TypeScript files, ensuring they are correctly recognized. You can use the TypeScript compiler (tsc) to compile your project.
+
+4. Importing the External Library
+If the external library is in a separate file and you want to include it in your project, you can load the JavaScript file in your HTML or module loader as needed.
+
+Example: Including a script in HTML.
+
+html
+<script src="path/to/myLibrary.js"></script>  
+<script src="path/to/main.js"></script>  
+5. Using with Modules
+If you use modules, you can also integrate ambient namespaces. You can place the ambient declarations in a .d.ts file and then import them in your module files.
+
+Example:
+
+typescript
+// myLibrary.d.ts  
+
+declare namespace MyLibrary {  
+    function greet(name: string): string;  
+    function add(x: number, y: number): number;  
+}  
+
+// module.ts  
+
+/// <reference path="myLibrary.d.ts" />  
+
+export function useLibrary() {  
+    const greeting = MyLibrary.greet("Bob");  
+    return greeting;  
+}  
+6. Conclusion
+Using an ambient namespace in TypeScript is a powerful way to define types for external libraries that lack proper type definitions. By creating a .d.ts file with the appropriate type declarations, you can call library functions with the benefits of TypeScript's type-checking, ensuring safer and more maintainable code. Remember to reference the declaration file where necessary and load the corresponding JavaScript library in your project setup.
+
+
+
+
+
+Nominal typing in TypeScript means that types are distinguished by their names rather than their structure. This approach emphasizes the identity of types based on their declared names rather than their shape or the properties they contain.
+
+Key Concepts of Nominal Typing in TypeScript
+Distinct Types by Name: Two types with the same structure are considered different if they have different names.
+
+Example:
+
+typescript
+interface Person {  
+    name: string;  
+    age: number;  
+}  
+
+interface Employee {  
+    name: string;  
+    age: number;  
+}  
+
+const person: Person = { name: "Alice", age: 30 };  
+const employee: Employee = { name: "Bob", age: 25 };  
+
+// person and employee are different types, even though they have the same structure  
+Type Aliases: Using type aliases can also demonstrate nominal typing. Different type aliases referring to the same structure are distinct types.
+
+Example:
+
+typescript
+type Animal = { species: string; };  
+type Pet = { species: string; };  
+
+const cat: Animal = { species: "Cat" };  
+const dog: Pet = { species: "Dog" };  
+
+// cat and dog are considered different types, despite having the same shape  
+Using Classes: Classes provide a clear example of nominal typing, as each class has its own type, even if the properties are the same.
+
+Example:
+
+typescript
+class A {  
+    value: number;  
+    constructor(value: number) {  
+        this.value = value;  
+    }  
+}  
+
+class B {  
+    value: number;  
+    constructor(value: number) {  
+        this.value = value;  
+    }  
+}  
+
+const a = new A(10);  
+const b = new B(20);  
+
+// a and b are different types due to their class definitions  
+Type Compatibility: Nominal typing restricts type compatibility to types that are explicitly declared as the same type. You cannot use one type where another type is expected, even if they have the same members.
+
+Example:
+
+typescript
+function processPerson(person: Person) {  
+    console.log(person.name);  
+}  
+
+processPerson(employee);  // Error: Argument of type 'Employee' is not assignable to parameter of type 'Person'.  
+Conclusion
+In summary, nominal typing in TypeScript focuses on the identity of types based on their names rather than their structure. This approach provides a way to create distinct types and ensures that only explicitly matching types can be used interchangeably, enhancing code clarity and type safety.
